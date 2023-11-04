@@ -1,20 +1,22 @@
 from flask import Flask, jsonify
 import yfinance as yf
+from yahoo_finance_data import YFinance
 from flask_cors import CORS  # Import the CORS library
 
 app = Flask(__name__)
 CORS(app)  # Initialize the Flask-CORS extension with the default arguments
 
+
 # Given a Symbol, return info on symbol.
 @app.route('/info/<string:ticker_or_option>', methods=['GET'])
 def get_info(ticker_or_option):
-    asset = yf.Ticker(ticker_or_option)
-    info = asset.info
+    yahoo_finance_client = YFinance(ticker_or_option)
+    info = yahoo_finance_client.info
 
     # Selecting some of the info to return
-    selected_info = {key: info[key] for key in ['symbol', 'shortName', 'previousClose', 'open', 'dayLow', 'dayHigh'] if
+    selected_info = {key: info[key] for key in ['symbol', 'bid', 'ask'] if
                      key in info}
-
+    print(selected_info)
     return jsonify(selected_info)
 
 
